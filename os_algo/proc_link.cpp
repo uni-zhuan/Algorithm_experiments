@@ -38,6 +38,11 @@ struct pcb{
     }
 };//头文件定义的结构体后面要加；
 
+bool compare(const pcb &a, const pcb &b)
+{
+    return a < b;
+}
+
 list<pcb> waitpcbs;
 vector<pcb> runpcbs;
 vector<pcb> finishpcbs;
@@ -115,7 +120,7 @@ void printProcess()
 
 void priorityProc()
 {
-    sort(waitpcbs.begin(), waitpcbs.end(),greater<pcb>()); //优先数高优先级高
+    waitpcbs.sort(); //优先数高优先级高
     printProcess();
     while(!waitpcbs.empty())
     {
