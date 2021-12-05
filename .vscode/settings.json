@@ -27,6 +27,10 @@
         "string": "cpp",
         "queue": "cpp",
         "unordered_map": "cpp",
-        "xlocinfo": "cpp"
+        "xlocinfo": "cpp",
+        "random": "cpp",
+        "system_error": "cpp",
+        "xlocnum": "cpp",
+        "xtr1common": "cpp"
     }
 }
