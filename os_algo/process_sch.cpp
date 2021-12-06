@@ -3,6 +3,7 @@
 #include<iostream>
 #include<vector>
 #include<queue>
+#include <iomanip>
 using namespace std;
 
 enum processStatus{//枚举进程状态
@@ -17,15 +18,17 @@ struct pcb{
     int cputime;//占用CPU时间片数
     int alltime;//进程所需时间片数
     processStatus ps;//进程状态
+    int passtime;
     int next;//就绪队列中：下一进程pid,最后一个是-1；结束队列中为-1；运行队列中为就绪队列首
     pcb( int pid,int priority,int cputime,int alltime,
-    processStatus ps,int next)
+    processStatus ps,int passtime,int next)
     {
         this->pid=pid;
         this->priority=priority;
         this->cputime=cputime;
         this->alltime=alltime;
         this->ps=ps;
+        this->passtime;
         this->next=next;
     }
     bool operator<(const pcb & p1)  const
@@ -41,17 +44,18 @@ struct pcb{
 vector<pcb> waitpcbs;
 vector<pcb> runpcbs;
 vector<pcb> finishpcbs;
+int nowtime=0;
 
 void newpcbs1()
 {
     int i;
     for(i=1;i<=4;i++)
     {
-        pcb newpcb(i,rand()%83+1,0,rand()%8+1,processStatus(1),i+1);
+        pcb newpcb(i,rand()%83+1,0,rand()%8+1,processStatus(1),0,i+1);
         //用质数作生成范围内随机数得到的结果会好些
         waitpcbs.push_back(newpcb);
     }
-    pcb newpcb(i,rand()%40+1,0,rand()%10+1,processStatus(1),-1);
+    pcb newpcb(i,rand()%40+1,0,rand()%10+1,processStatus(1),0,-1);
     waitpcbs.push_back(newpcb);
 }
 
@@ -60,10 +64,10 @@ void newpcbs2()
     int i;
     for(i=1;i<=4;i++)
     {
-        pcb newpcb(i,rand()%5+1,0,rand()%10+1,processStatus(1),i+1);
+        pcb newpcb(i,rand()%5+1,0,rand()%10+1,processStatus(1),0,i+1);
         waitpcbs.push_back(newpcb);
     }
-    pcb newpcb(i,rand()%5+1,0,rand()%10+1,processStatus(1),-1);   
+    pcb newpcb(i,rand()%5+1,0,rand()%10+1,processStatus(1),0,-1);   
     waitpcbs.push_back(newpcb);     
 }
 
@@ -71,7 +75,7 @@ void printProcess()
 {
     int i;
     cout<<"=========================================="<<endl; 
-    cout<<"RUNNING PROC"<<"            "<<"WAITING QUEUE"<<endl;
+    cout<<"RUNNING PROC"<<"             "<<"WAITING PROC"<<endl;
     if(runpcbs.empty()) cout<<"                       ";
     else cout<<runpcbs[0].pid<<"                       ";
     for(i=0;i<waitpcbs.size();i++)
@@ -138,6 +142,7 @@ void priorityProc()
             runpcbs[0].alltime-=1;
             runpcbs[0].cputime+=1;  
             runpcbs[0].next=waitpcbs.front().pid; 
+            nowtime+=1;
             printProcess();         
         }
         if(waitpcbs.empty())//等待队列中已经为空
@@ -147,14 +152,17 @@ void priorityProc()
                 runpcbs[0].priority-=3;
                 runpcbs[0].alltime-=1;
                 runpcbs[0].cputime+=1;
+                nowtime+=1;
                 printProcess();           
             }
+            runpcbs[0].passtime=nowtime;
             finishpcbs.push_back(runpcbs[0]);
             runpcbs.pop_back();
         }
         //若这里使用if会使runpcbs不能释放
         else if(runpcbs[0].alltime<=0)//判断当前运行进程是否执行完毕，是则放入结束进程
         {
+            runpcbs[0].passtime=nowtime;
             runpcbs[0].ps=processStatus(2);
             finishpcbs.push_back(runpcbs[0]);
             runpcbs.pop_back();            
@@ -197,10 +205,12 @@ void RRProc()
             runpcbs[0].cputime+=1; 
             runpcbs[0].next=waitpcbs.front().pid; 
             runpcbs[0].priority-=1;
+            nowtime+=1;
             printProcess();  
             //进程时间片到，加finish，跳出循环 
             if(runpcbs[0].alltime==0)
             {
+                runpcbs[0].passtime=nowtime;
                 runpcbs[0].ps=processStatus(2);
                 finishpcbs.push_back(runpcbs[0]);
                 runpcbs.pop_back(); 
@@ -235,7 +245,19 @@ main()
         RRProc();
     }
     cout<<"=========================================="<<endl<<"FINISH       "; 
-    for(int i=finishpcbs.size()-1;i>=0;i--)
-        cout<<finishpcbs[i].pid<<"    ";
-        
+    for(int i=0;i<finishpcbs.size();i++)
+        cout<<finishpcbs[i].pid<<setw(8)<< setfill(' ');
+    cout<<endl<<"TURNTIME     "; 
+    for(int i=0;i<finishpcbs.size();i++)
+        cout<<finishpcbs[i].passtime<<setw(8)<< setfill(' ');
+    cout<<endl<<"WEIGHTTIME   "; 
+    for(int i=0;i<finishpcbs.size();i++)
+        cout<<double(finishpcbs[i].passtime)/double(finishpcbs[i].cputime)<<setw(8)<< setfill(' ');
+    cout<<endl<<"MEANWEIGHTTIME   "; 
+    double
+    sum=0;
+    for(int i=0;i<finishpcbs.size();i++)
+        sum+=double(finishpcbs[i].passtime)/double(finishpcbs[i].cputime);
+    sum/=5.0;
+    cout<<sum<<endl;
 }
