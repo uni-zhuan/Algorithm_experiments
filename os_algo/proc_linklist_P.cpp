@@ -1,13 +1,10 @@
-/*
- *利用C/C++模拟进程调度,运用优先调度算法
- */
 #include<iostream>
 #include<stdio.h>
 #include<malloc.h>
 using namespace std;
 enum process_status{READY , RUN , FINISH}; //进程的三种状态
 //定义进程数据结构
-typedef struct pcb
+struct PCB
 {
     int process_tag ; //存储进程标识符
     struct pcb *next ; //连接下一个进程的指针
@@ -15,9 +12,9 @@ typedef struct pcb
     int cputime ; //占用CPU时间片数
     int alltime ; //进程所需时间片数
     process_status status ; //进程当前的状态
-} PCB ;
+};
 //定义进程控制块的链结构
-typedef struct
+struct PCBC
 {
     PCB *run ; //当前运行的进程指针
     PCB *ready ; //当前准备队列的头指针
@@ -91,9 +88,8 @@ void sort_pcbc(PCBC *pcbc , int pcb_num)
        }
    }
 }
-/*
- *打印当前进程控制块中的情况
- */
+
+// 打印当前进程控制块中的情况
  void print_log(PCBC *pcbc)
  {
      PCB *ready , *finish ;
@@ -122,70 +118,69 @@ void sort_pcbc(PCBC *pcbc , int pcb_num)
          finish = finish->next ;
      }
  }
-/*
- *运行进程控制块
- */
- void run_pcbc_priority(PCBC *xpcbc)
- {
-     PCBC *pcbc = xpcbc ;
-     PCB *temp , *pre , *tail ;
-     //进行那个CPU的循环调用
-     while(pcbc->ready != NULL)
-     {
-         pcbc->run = pcbc->ready ; //将就绪队列队首加入运行队列
-         pcbc->ready = pcbc->ready->next ; //改变队首元素
-         print_log(pcbc) ;
-         pcbc->run->priority -= 3 ;
-         pcbc->run->alltime -= 1 ;
-         if(pcbc->run->alltime == 0)
-         {
-           if(pcbc->finish == NULL)
-           {
-               pcbc->finish = pcbc->run ;
-               pcbc->finish->next = NULL ;
-               tail = pcbc->finish ;
-           }
-           else
-           {
-              tail->next = pcbc->run ;
-              tail = tail->next ;
-              tail->next = NULL ;
-           }
-         }
-         else
-         {
-             if(pcbc->ready != NULL)
-             {
-                 temp = pcbc->ready ;
-                 while(temp != NULL)
-                 {
-                     if(pcbc->run->priority > temp->priority)
-                     {
-                         break ;
-                     }
-                     pre = temp ;
-                     temp = temp->next ;
-                 }
-                 if(temp == pcbc->ready)
-                 {
-                     pcbc->run->next = pcbc->ready ;
-                     pcbc->ready = pcbc->run ;
-                 }
-                 else
-                 {
-                    pcbc->run->next = pre->next ;
-                    pre->next = pcbc->run ;
-                 }
-             }
-             else
-             {
-                 pcbc->ready = pcbc->run ;
-             }
-         }
-     }
-     pcbc->run = NULL ;
-     print_log(pcbc) ;
- }
+
+// 运行进程控制块
+void run_pcbc_priority(PCBC *xpcbc)
+{
+    PCBC *pcbc = xpcbc ;
+    PCB *temp , *pre , *tail ;
+    //进行那个CPU的循环调用
+    while(pcbc->ready != NULL)
+    {
+        pcbc->run = pcbc->ready ; //将就绪队列队首加入运行队列
+        pcbc->ready = pcbc->ready->next ; //改变队首元素
+        print_log(pcbc) ;
+        pcbc->run->priority -= 3 ;
+        pcbc->run->alltime -= 1 ;
+        if(pcbc->run->alltime == 0)
+        {
+        if(pcbc->finish == NULL)
+        {
+            pcbc->finish = pcbc->run ;
+            pcbc->finish->next = NULL ;
+            tail = pcbc->finish ;
+        }
+        else
+        {
+            tail->next = pcbc->run ;
+            tail = tail->next ;
+            tail->next = NULL ;
+        }
+        }
+        else
+        {
+            if(pcbc->ready != NULL)
+            {
+                temp = pcbc->ready ;
+                while(temp != NULL)
+                {
+                    if(pcbc->run->priority > temp->priority)
+                    {
+                        break ;
+                    }
+                    pre = temp ;
+                    temp = temp->next ;
+                }
+                if(temp == pcbc->ready)
+                {
+                    pcbc->run->next = pcbc->ready ;
+                    pcbc->ready = pcbc->run ;
+                }
+                else
+                {
+                pcbc->run->next = pre->next ;
+                pre->next = pcbc->run ;
+                }
+            }
+            else
+            {
+                pcbc->ready = pcbc->run ;
+            }
+        }
+    }
+    pcbc->run = NULL ;
+    print_log(pcbc) ;
+}
 
 main()
 {
@@ -202,6 +197,6 @@ main()
     //根据队列优先级进行排序
     sort_pcbc(pcbc , pcb_num) ;
     //通过优先调度算法运行
-    printf("PRIORITY--------------------------\n") ;
+    printf("PRIORITY\n") ;
     run_pcbc_priority(pcbc) ;
 }

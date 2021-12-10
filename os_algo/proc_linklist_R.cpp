@@ -154,6 +154,6 @@ main()
         input_process(pcbc) ; //输入所有进程，并进入就绪队列
     }
     //通过时间片轮转调度算法
-    printf("ROUND ROBIN------------------------\n") ;
+    printf("ROUND ROBIN\n") ;
     run_pcbc_rr(pcbc) ;
 }

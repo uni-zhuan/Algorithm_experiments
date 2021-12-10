@@ -71,7 +71,7 @@ void newpcbs2()
     waitpcbs.push_back(newpcb);     
 }
 
-void printProcess()
+void printProcess()//进程信息打印
 {
     int i;
     cout<<"=========================================="<<endl; 
@@ -85,7 +85,6 @@ void printProcess()
     if(!runpcbs.empty()) cout<<runpcbs[0].pid<<"   ";
     for(i=0;i<waitpcbs.size();i++)
         cout<<waitpcbs[i].pid<<"   ";
-
     cout<<endl<<"PRIORITY"<<"                ";
     if(!runpcbs.empty()) cout<<runpcbs[0].priority<<"   ";
     for(i=0;i<waitpcbs.size();i++)
@@ -114,7 +113,7 @@ void printProcess()
     cout<<endl;
 }
 
-void priorityProc()
+void priorityProc()//优先数法
 {
     sort(waitpcbs.begin(), waitpcbs.end(),greater<pcb>()); //优先数高优先级高
     printProcess();
@@ -177,7 +176,7 @@ void priorityProc()
     cout<<endl;
 }
 
-void RRProc()
+void RRProc()//简单轮转法
 {
     printProcess();
     while(!waitpcbs.empty())
@@ -227,10 +226,10 @@ void RRProc()
     }
     cout<<endl;
 }
+
 main()
 {
     int choose;
-    // newpcbs();
     cout<<"CHOOSE THE ALGORTITHM: (1 FOR PRIORITY, 2 FOR ROUND BOBIN)  ";
     cin>>choose;
     if(choose==1){
@@ -254,8 +253,7 @@ main()
     for(int i=0;i<finishpcbs.size();i++)
         cout<<double(finishpcbs[i].passtime)/double(finishpcbs[i].cputime)<<setw(8)<< setfill(' ');
     cout<<endl<<"MEANWEIGHTTIME   "; 
-    double
-    sum=0;
+    double sum=0;
     for(int i=0;i<finishpcbs.size();i++)
         sum+=double(finishpcbs[i].passtime)/double(finishpcbs[i].cputime);
     sum/=5.0;

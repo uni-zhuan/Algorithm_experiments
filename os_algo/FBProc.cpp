@@ -77,6 +77,7 @@ void newpcbs()
     pnum++;
 }
 
+//打印进程信息
 void printqueue()
 {
     if(pnum==finishpcbs.size())
@@ -111,9 +112,9 @@ void printqueue()
     cout<<endl;
 }
 
+//多级队列算法
 void Fb()
-{
-    
+{   
     if(runpcb==0)//当前没有进程在运行（有一优先级更高进程进入、上一进程运行刚结束）
     {
         //队列为空，返回FBProc等待新进程进入
@@ -162,6 +163,7 @@ void Fb()
     }    
 }
 
+//单位时间等待输入
 void FBProc()
 {
     int choose;
@@ -181,8 +183,6 @@ void FBProc()
         cout<<"CHOOSE THE ACTION (1 TO GO ON, 2 TO ADD A NEW PROCESS)   " ;
     }
 }
-
-
 
 main()
 {
