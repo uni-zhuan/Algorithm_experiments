@@ -59,13 +59,6 @@ void swapx(PCB  * p1 , PCB *p2)
 {
     int  i , priority , cputime , alltime ;
     int temp ;
-    //进行标识符的交换
-    // for(i = 0 ; i < 20 ; i++)
-    // {
-    //     temp = p1->process_tag[i];
-    //     p1->process_tag[i] = p2->process_tag[i] ;
-    //     p2->process_tag[i] = temp ;
-    // }
     temp = p1->process_tag;
     p1->process_tag = p2->process_tag ;
     p2->process_tag= temp ;
