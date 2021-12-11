@@ -31,8 +31,8 @@ bool option;
 int available;//可利用资源
 int nowprocess;//现在运行的进程号
 int resource;//系统资源数
-int procid;//假定分配的进程
-int request;//假定分配的资源数
+queue<int> procid;//假定分配的进程
+queue<int> request;//假定分配的资源数
 
 void front()//初始化
 {
@@ -51,12 +51,13 @@ void printerror(int errornb)//打印出错信息
     {
         case 1:
             cout<<"Max claim of this resource is greater than all resources"<<endl;
-        break; // 可选的
+            break;
         case 2:
             cout<<"Request is greater than need"<<endl;
+            break;
         case 3:
             cout<<"Request is greater than available"<<endl;
-        break; // 可选的  
+            break;
     }
 }
 void printprocdata()//打印资源数据
@@ -117,52 +118,65 @@ bool safe()
 void banker()//银行家算法
 {
     bool sf;
+    int tempcin;
+    int thispid;
+    int thisrequest;
     while(true)
     {
         cout<<"Process id: ";
-        cin>>procid;
+        cin>>tempcin;
+        procid.push(tempcin);
         cout<<"Try to allocate: ";
-        cin>>request;
-        //检查需要的资源数是否超过
-        if(request>process[procid-1].needp)
+        cin>>tempcin;
+        request.push(tempcin);
+        for(int j=procid.size();j>0;j--)
         {
-            printerror(2);
-            break;
-        }
-        else if(request>available)
-        {
-            printerror(3);
-            break;
-        }
-        else
-        {
-            available-=request;
-            process[procid-1].allocationp+=request;
-            process[procid-1].needp-=request;
-            printprocdata();
-            sf=safe();
-            if(sf)
+            thispid=procid.front();
+            thisrequest=request.front();
+            procid.pop();
+            request.pop();
+            //检查需要的资源数是否超过
+            if(thisrequest>process[thispid].needp)
             {
-                for(int i=0;i<NP;i++)
-                {
-                    if(process[i].needp==0)
-                    {
-                        available+=process[i].allocationp;
-                        process[i].allocationp=0;
-                    }
-                }
-                cout<<"This allocation can be completed"<<endl;
-                printprocdata();
+                printerror(2);
+                break;
+            }
+            else if(thisrequest>available)
+            {
+                printerror(3);
+                break;
             }
             else
-            {   
-                cout<<"This allocation can't be completed"<<endl;
-                available+=request;
-                process[procid-1].allocationp-=request;
-                process[procid-1].needp+=request;
+            {
+                available-=thisrequest;
+                process[thispid].allocationp+=thisrequest;
+                process[thispid].needp-=thisrequest;
+                printprocdata();
+                sf=safe();
+                if(sf)
+                {
+                    for(int i=0;i<NP;i++)
+                    {
+                        if(process[i].needp==0)
+                        {
+                            available+=process[i].allocationp;
+                            process[i].allocationp=0;
+                        }
+                    }
+                    cout<<"This allocation can be completed"<<endl;
+                    printprocdata();
+                }
+                else
+                {   
+                    cout<<"This allocation can't be completed"<<endl;
+                    available+=thisrequest;
+                    process[thispid].allocationp-=thisrequest;
+                    process[thispid].needp+=thisrequest;
+                    procid.push(thispid);
+                    request.push(thisrequest);
+                }
             }
         }
-
     }
 }
 
