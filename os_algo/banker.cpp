@@ -24,10 +24,18 @@ struct proc{
         this->finishp=finishp;
         this->workp=workp;
     }
+    bool operator<(const proc & p1)  const
+    {
+        return needp < p1.needp;
+    }
+    bool operator>(const proc & p1)  const
+    {
+        return needp > p1.needp;
+    }
 };//头文件定义的结构体后面要加；
 
 vector<proc> process;
-bool option;
+int option;
 int available;//可利用资源
 int nowprocess;//现在运行的进程号
 int resource;//系统资源数
@@ -87,7 +95,7 @@ void printsafe()//打印资源数据
     }
 }
 
-bool safe()
+bool safe()//安全性，测试当前分配状况下是否产生死锁
 {
     int work=available;
     for(int i=0;i<NP;i++)
@@ -125,7 +133,7 @@ void banker()//银行家算法
     {
         cout<<"Process id: ";
         cin>>tempcin;
-        procid.push(tempcin);
+        procid.push(tempcin-1);
         cout<<"Try to allocate: ";
         cin>>tempcin;
         request.push(tempcin);
@@ -139,11 +147,13 @@ void banker()//银行家算法
             if(thisrequest>process[thispid].needp)
             {
                 printerror(2);
+                j--;
                 break;
             }
             else if(thisrequest>available)
             {
                 printerror(3);
+                j--;
                 break;
             }
             else
@@ -155,13 +165,10 @@ void banker()//银行家算法
                 sf=safe();
                 if(sf)
                 {
-                    for(int i=0;i<NP;i++)
+                    if(process[thispid].needp==0)
                     {
-                        if(process[i].needp==0)
-                        {
-                            available+=process[i].allocationp;
-                            process[i].allocationp=0;
-                        }
+                        available+=process[thispid].allocationp;
+                        process[thispid].allocationp=0;
                     }
                     cout<<"This allocation can be completed"<<endl;
                     printprocdata();
@@ -180,9 +187,97 @@ void banker()//银行家算法
     }
 }
 
+void deadlock()
+{
+    bool sf;
+    int tempcin;
+    int thispid;
+    int thisrequest;
+    while(true)
+    {
+        cout<<"Process id: ";
+        cin>>tempcin;
+        procid.push(tempcin-1);
+        cout<<"Try to allocate: ";
+        cin>>tempcin;
+        request.push(tempcin);
+        thispid=procid.front();
+        thisrequest=request.front();
+        procid.pop();
+        request.pop();
+        if(thisrequest>process[thispid].needp)
+        {
+            printerror(2);
+            // break;
+        }
+        else if(thisrequest>available)
+        {
+            printerror(4);
+            cout<<"Process "<<process[thispid].pid<<" in deadlock."<<endl;
+            // system("pause");
+            getchar();
+        }
+        else
+        {
+            available-=thisrequest;
+            process[thispid].allocationp+=thisrequest;
+            process[thispid].needp-=thisrequest;
+            printprocdata();  
+            if(process[thispid].needp==0)//若进程结束，将资源释放
+            {
+                available+=process[thispid].allocationp;
+                process[thispid].allocationp=0;
+            }        
+        }
+    }
+}
+
+void sortprevent()
+{
+    bool sf;
+    int tempcin;
+    int thispid;
+    int thisrequest;
+    int emptyindex=0;
+    while(true)
+    {
+        sort(process.begin(), process.end(),less<proc>());
+        procid.push(tempcin-1);
+        cout<<"Process "<<process[emptyindex].pid<<": try to allocate: ";
+        cin>>tempcin;
+        request.push(tempcin);
+        thisrequest=request.front();
+        request.pop();
+        if(thisrequest>process[emptyindex].needp)
+        {
+            printerror(2);
+            // break;
+        }
+        else if(thisrequest>available)
+        {
+            printerror(4);
+            cout<<"Process "<<process[emptyindex].pid<<" in deadlock."<<endl;
+            getchar();
+        }
+        else
+        {
+            available-=thisrequest;
+            process[emptyindex].allocationp+=thisrequest;
+            process[emptyindex].needp-=thisrequest;
+            if(process[emptyindex].needp==0)//若进程结束，将资源释放
+            {
+                available+=process[emptyindex].allocationp;
+                process[emptyindex].allocationp=0;
+                emptyindex+=1;
+            }      
+            printprocdata();   
+        }
+    }
+}
+
 main()
 {
-    cout<<"Option = ";
+    cout<<"Option = (1 for banker, 2 for deadlock, 3 for sortprevent)";
     cin>>option;
     cout<<"Resource Num= ";
     cin>>resource;
@@ -217,9 +312,14 @@ main()
         available-=process[i].allocationp;
     cout<<endl;
     printprocdata();
-    if(!safe())
-        cout<<"This system is not safe!"<<endl;
-    // cout<<"The system alloction process is as follows:"<<endl
-    // cout<<endl;
-    banker();
+    if(option==1)
+    {
+        if(!safe())
+            cout<<"This system is not safe!"<<endl;
+        banker();
+    }
+    else if(option==2)
+        deadlock();
+    else if(option==3)
+        sortprevent();
 }
