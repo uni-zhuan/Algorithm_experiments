@@ -2,7 +2,7 @@ def p3(ih):
     return pow(ih,3)
 def p4(ih):
     return pow(ih,4)
-
+    
 if __name__=="__main__":
     # j=[0,1,1]
     # s=[0,1,8]
