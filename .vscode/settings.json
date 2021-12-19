@@ -32,6 +32,8 @@
         "system_error": "cpp",
         "xlocnum": "cpp",
         "xtr1common": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "cmath": "cpp",
+        "stack": "cpp"
     }
 }
