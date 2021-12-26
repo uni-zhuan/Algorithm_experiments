@@ -6,8 +6,8 @@
 #include <iomanip>
 
 #define INF 32767
-#define ADDRNB 200
-#define RANDADDR 12
+#define ADDRNB 100
+#define RANDADDR 100
 #define BLOCK 3
 #define RAND 5
 
@@ -35,21 +35,31 @@ void front()
         addr.insert(addr.begin()+rand()%addr.size(),rand()%(INF/2));
         addr.insert(addr.begin()+rand()%addr.size(),rand()%(INF/2)+(INF/2));
     } 
-    for(int i=0;i<ADDRNB;i++)
-        cout<<"addr["<<i<<"]="<<addr[i]<<" "; 
+    // for(int i=0;i<ADDRNB;i++)
+    //     cout<<"addr["<<i<<"]="<<addr[i]<<" "; 
 }
 
 void transpage(int page)
 {
     for(int i=0;i<ADDRNB;i++)
     {
-        pagenb.push_back(addr[i]/(page*1024));
+        randpage.push_back(1+addr[i]/(page*1024));
     }
+    // cout<<endl;
+    // for(int i=0;i<ADDRNB;i++)
+    // {
+    //     cout<<"page["<<i<<"]="<<randpage[i]<<" "; 
+    // }
+    // cout<<endl;
+}
+
+void print1()
+{
+    for(int i=0;i<ADDRNB;i++)
+        cout<<"addr["<<i<<"]="<<addr[i]<<" "; 
     cout<<endl;
     for(int i=0;i<ADDRNB;i++)
-    {
-        cout<<"page["<<i<<"]="<<pagenb[i]<<" "; 
-    }
+        cout<<"page["<<i<<"]="<<randpage[i]<<" "; 
     cout<<endl;
 }
 
@@ -65,7 +75,19 @@ void front2()
             result[i][j]=('_');
 }
 
-void print()
+void front3(int blocknumber)
+{
+    result.clear();
+    result.resize(RANDADDR);
+    for(int i=0;i<RANDADDR;i++)
+    {
+        result[i].resize(blocknumber);
+        for(int j=0;j<blocknumber;j++)
+            result[i][j]=('_');
+    }
+}
+
+void print2()
 {
     cout<<endl<<"结果序列："<<endl;
     for(int i=0;i<BLOCK;i++)
@@ -78,12 +100,25 @@ void print()
         cout<<endl;
     }
 }
+// void print3(int blocknumber)
+// {
+//     cout<<endl<<"结果序列："<<endl;
+//     for(int i=0;i<blocknumber;i++)
+//     {
+//         for(int j=0;j<RANDADDR;j++)//若直接cout会乱码
+//             if(result[j][i]=='_')
+//                 cout<<'_'<<' ';
+//             else
+//                 cout<<int(result[j][i])<<' ';
+//         cout<<endl;
+//     }
+// }
 
-void missing()
+void missing(int blocknumber)
 {
     double sum=0;
     for(int i=0;i<RANDADDR-1;i++)
-        for(int j=0;j<BLOCK;j++)
+        for(int j=0;j<blocknumber;j++)
             if(result[i][j]!=result[i+1][j])
             {
                 sum++;
@@ -94,12 +129,39 @@ void missing()
     cout<<"缺页率: "<<missingrate<<endl;
 }
 
-void OPT()
+void print3(int blocknumber)
+{
+    double sum=0;
+    for(int i=0;i<RANDADDR-1;i++)
+        for(int j=0;j<blocknumber;j++)
+            if(result[i][j]!=result[i+1][j])
+            {
+                sum++;
+                break;
+            }
+    missingrate=sum/RANDADDR;
+    cout<<setw(4) <<blocknumber<<setw(17) <<sum<<setw(20) <<missingrate<<endl;
+}
+void print4(char str,int blocknumber)
+{
+    double sum=0;
+    for(int i=0;i<RANDADDR-1;i++)
+        for(int j=0;j<blocknumber;j++)
+            if(result[i][j]!=result[i+1][j])
+            {
+                sum++;
+                break;
+            }
+    missingrate=sum/RANDADDR;
+    cout<<str<<"    miss count: "<<sum<<"   miss rate: "<<missingrate<<endl;
+}
+
+void OPT(int blocknumber)
 {
     int j;
     for(int i=0;i<RANDADDR;i++)
     {
-        for(j=0;j<BLOCK;j++)
+        for(j=0;j<blocknumber;j++)
         {
             if(result[i][j]=='_')
             {
@@ -112,7 +174,7 @@ void OPT()
                 break;
             }
         }
-        if(j==BLOCK)
+        if(j==blocknumber)
         {
             //找最迟访问页面
             int tempaddr=i;
@@ -133,12 +195,12 @@ void OPT()
             {
                 tempmax++;
             }
-            for(int p=1;p<BLOCK;p++)//找最大的最后一次地址值
+            for(int p=1;p<blocknumber;p++)//找最大的最后一次地址值
             {
                 if(fin[tempmax]<fin[p]&&randpage[p+1]!=i&& find(result[i].begin(),result[i].end(),p+1)!= result[i].end())
                     tempmax=p;
             }
-            for(int p=0;p<BLOCK;p++)
+            for(int p=0;p<blocknumber;p++)
             {
                 if(result[i][p]==tempmax+1)
                 {
@@ -146,21 +208,21 @@ void OPT()
                 }
             }
         }
-        for(int k=0;k<BLOCK;k++)
+        for(int k=0;k<blocknumber;k++)
         {
             if(i<RANDADDR-1 && result[i+1][k]=='_')
                 result[i+1][k]=result[i][k];
         }
     }
-    print();
-    missing();
+    // print();
+    // missing();
 }
 
-void LRU()
+void LRU(int blocknumber)
 {
     for(int i=0;i<RANDADDR;i++)
     {
-        if(pagedeque.size()<BLOCK)
+        if(pagedeque.size()<blocknumber)
             pagedeque.push_back(randpage[i]);
         else if(find(pagedeque.begin(),pagedeque.end(),randpage[i])==pagedeque.end())
         {
@@ -177,15 +239,15 @@ void LRU()
             result[i][j]=pagedeque[j];
         }
     }
-    print();
-    missing();
+    // print();
+    // missing();
 }
 
-void FIFO()
+void FIFO(int blocknumber)
 {
     for(int i=0;i<RANDADDR;i++)
     {
-        if(pagedeque.size()<BLOCK)
+        if(pagedeque.size()<blocknumber)
             pagedeque.push_back(randpage[i]);
         else if(find(pagedeque.begin(),pagedeque.end(),randpage[i])!=pagedeque.end())
             ;
@@ -199,8 +261,8 @@ void FIFO()
             result[i][j]=pagedeque[j];
         }
     }
-    print();
-    missing();
+    // print();
+    // missing();
 }
 
 main()
@@ -208,29 +270,128 @@ main()
     //要求1
     int page=1;
     int option;
-    // front();
-    // transpage(page);
-
-    //要求2
-    cout << "Option = (1 for OPT, 2 for LRU, 3 for FIFO) ";
-    cin >> option;
-    front2();
-    switch (option)
+    int require;
+    cout << "Option for different experiment require (1, 2, 3, 4) ";
+    cin >> require;
+    switch(require)
     {
         case 1:
         {
-            OPT();
+            //要求1
+            front();
+            transpage(page);
+            print1();
             break;
         }
         case 2:
         {
-            LRU();
+            //要求2
+            cout << "Option = (1 for OPT, 2 for LRU, 3 for FIFO) ";
+            cin >> option;
+            front2();
+            switch (option)
+            {
+                case 1:
+                {
+                    OPT(BLOCK);
+                    print2();
+                    missing(BLOCK);
+                    break;
+                }
+                case 2:
+                {
+                    LRU(BLOCK);
+                    print2();
+                    missing(BLOCK);
+                    break;
+                }
+                case 3:
+                {
+                    FIFO(BLOCK);
+                    print2();
+                    missing(BLOCK);
+                    break;
+                } 
+            }
             break;
         }
         case 3:
+        //要求3
         {
-            FIFO();
+            front();
+            transpage(page);
+            // print1();
+            cout << "Option = (1 for OPT, 2 for LRU, 3 for FIFO) ";
+            cin >> option;
+            cout<<"MEMORY         MISS COUNT         MISS RATE"<<endl;
+            switch (option)
+            {
+                case 1:
+                {
+                    for(int i=32;i>=1;i/=2)
+                    {
+                        front3(32/i);
+                        OPT(32/i);
+                        print3(32/i);
+                        pagedeque.clear();
+                    }
+                    break;
+                }
+                case 2:
+                {
+                    for(int i=32;i>=1;i/=2)
+                    {
+                        front3(32/i);
+                        LRU(32/i);
+                        print3(32/i);
+                        pagedeque.clear();
+                    }
+                    break;
+                }
+                case 3:
+                {
+                    for(int i=32;i>=1;i/=2)
+                    {
+                        front3(32/i);
+                        FIFO(32/i);
+                        print3(32/i);
+                        pagedeque.clear();
+                    }
+                    break;
+                } 
+            }
             break;
         }
+        case 4:
+        //要求4
+        {
+            front();
+            int num=1;
+            int pagesize;
+            cout<<"input the pagesize: ";
+            cin>>pagesize;
+            transpage(pagesize);
+            for(int i=32;i>=1;i/=2)
+            {
+                cout<<endl<<"= = = = = = = = = = Test "<<num<<"= = = = = = = = = ="<<endl;
+                cout<<"vmsize = 32k   pagesize = "<<pagesize<<"k   memcount = "<<32/i<<endl;
+                front3(32/i);
+                OPT(32/i);
+                print4('O',32/i);
+                pagedeque.clear();
+
+                front3(32/i);
+                LRU(32/i);
+                print4('L',32/i);
+                pagedeque.clear();
+
+                front3(32/i);
+                FIFO(32/i);
+                print4('F',32/i);
+                pagedeque.clear();
+                num++;
+            }
+        }
     }
+    //要求四
 }
