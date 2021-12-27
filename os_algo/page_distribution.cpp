@@ -16,9 +16,9 @@ using namespace std;
 vector<int> addr;//指令地址流
 vector<int> pagenb;//页号
 vector<int> randpage;//随机生成页面一些
-vector<vector<char>> result(RANDADDR, vector<char>(BLOCK));
+vector<vector<char>> result(RANDADDR, vector<char>(BLOCK));//页面置换过程
+deque<int> pagedeque;//后两算法用，存储页号
 int emptyflag=0;
-deque<int> pagedeque;
 double missingrate;
 
 void front()
@@ -35,8 +35,6 @@ void front()
         addr.insert(addr.begin()+rand()%addr.size(),rand()%(INF/2));
         addr.insert(addr.begin()+rand()%addr.size(),rand()%(INF/2)+(INF/2));
     } 
-    // for(int i=0;i<ADDRNB;i++)
-    //     cout<<"addr["<<i<<"]="<<addr[i]<<" "; 
 }
 
 void transpage(int page)
@@ -45,12 +43,6 @@ void transpage(int page)
     {
         randpage.push_back(1+addr[i]/(page*1024));
     }
-    // cout<<endl;
-    // for(int i=0;i<ADDRNB;i++)
-    // {
-    //     cout<<"page["<<i<<"]="<<randpage[i]<<" "; 
-    // }
-    // cout<<endl;
 }
 
 void print1()
@@ -100,19 +92,6 @@ void print2()
         cout<<endl;
     }
 }
-// void print3(int blocknumber)
-// {
-//     cout<<endl<<"结果序列："<<endl;
-//     for(int i=0;i<blocknumber;i++)
-//     {
-//         for(int j=0;j<RANDADDR;j++)//若直接cout会乱码
-//             if(result[j][i]=='_')
-//                 cout<<'_'<<' ';
-//             else
-//                 cout<<int(result[j][i])<<' ';
-//         cout<<endl;
-//     }
-// }
 
 void missing(int blocknumber)
 {
@@ -328,7 +307,7 @@ main()
             {
                 case 1:
                 {
-                    for(int i=32;i>=1;i/=2)
+                    for(int i=16;i>=1;i/=2)
                     {
                         front3(32/i);
                         OPT(32/i);
@@ -339,7 +318,7 @@ main()
                 }
                 case 2:
                 {
-                    for(int i=32;i>=1;i/=2)
+                    for(int i=16;i>=1;i/=2)
                     {
                         front3(32/i);
                         LRU(32/i);
@@ -350,7 +329,7 @@ main()
                 }
                 case 3:
                 {
-                    for(int i=32;i>=1;i/=2)
+                    for(int i=16;i>=1;i/=2)
                     {
                         front3(32/i);
                         FIFO(32/i);
@@ -393,5 +372,4 @@ main()
             }
         }
     }
-    //要求四
 }
