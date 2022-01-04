@@ -34,6 +34,7 @@
         "xtr1common": "cpp",
         "iomanip": "cpp",
         "cmath": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "xmemory": "cpp"
     }
 }
