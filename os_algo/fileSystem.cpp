@@ -4,8 +4,8 @@
 #include<vector>
 #include<list>
 using namespace std;
-#define USER 2
-#define MAXFILE 2
+#define USER 10
+#define MAXFILE 10
 #define OPENMAX 5
 
 struct mfd{//主文件目录结构体
@@ -36,7 +36,7 @@ struct afd{//运行文件目录
     int fid;//文件号
     int fileName;//文件名
     int proctectCode[3];//保护码
-    int ROrW;//读写指针, 0 for open, 1 for w, 2 for r
+    int ROrW;//读写指针, 0 for open, 1 for r, 2 for w
     afd(int fid,char fileName,int* proctectCode,int ROrW)
     {
         this->fid = fid;
@@ -68,7 +68,7 @@ void front(){//初始化
     for(i=0;i<USER;i++)
     {
         char user;
-        user=char(int('a')+rand()%26);
+        user=char(int('a')+i);
         mfd newmfd(user,i*MAXFILE); 
         mfds.push_back(newmfd); 
         for(int j=0;j<MAXFILE;j++)
@@ -77,7 +77,9 @@ void front(){//初始化
         }      
     }
 }
-int checkUser(char chooseUser){
+
+int checkUser(char chooseUser)//检查选择用户是否合法
+{
     for(int i=0;i<USER;i++)
     {
         if(mfds[i].user==chooseUser)
@@ -86,7 +88,7 @@ int checkUser(char chooseUser){
     return -1;
 }
 
-void printDir(int num)
+void printDir(int num)//打印用户文件目录
 {
     cout<<"USER: "<<mfds[num].user<<endl;
     // int filenum=mfds[num+1].dirp-mfds[num].dirp;
@@ -103,7 +105,8 @@ void printDir(int num)
         }
     }
 }
-void printAfd()
+
+void printAfd()//打印打开文件目录
 {
     cout<<"OPEN FILE DIRECTORY: "<<endl;
     for(int i=0;i<afds.size();i++)
@@ -115,7 +118,7 @@ void printAfd()
     }
 }
 
-void create(char chooseUser)
+void create(char chooseUser)//新建文件
 {
     int filename;
     cout<<"CREATE A NEW FILE!"<<endl;
@@ -134,7 +137,7 @@ void create(char chooseUser)
     cout<<"THE NEW FILE IS CREATED!"<<endl;
 }
 
-void dele(char chooseUser)
+void dele(char chooseUser)//删除文件
 {
     int filename;
     cout<<"DELETE A FILE!"<<endl;
@@ -187,12 +190,12 @@ void dele(char chooseUser)
     }
 }
 
-void open(char chooseUser)
+void open(char chooseUser)//打开文件
 {
     int filename;
     if(afds.size()==OPENMAX)//考虑到最多能打开的文件数量
     {
-        cout<<"OPEN FILE IS UP TO MAX!"<<end;
+        cout<<"OPEN FILE IS UP TO MAX!"<<endl;
         return;
     }
     cout<<"OPEN A FILE!"<<endl;
@@ -222,7 +225,8 @@ void open(char chooseUser)
         cout<<"FILE IS OPENED!"<<endl;
     }
 }
-void close()
+
+void close()//关闭文件
 {
     int filename;
     cout<<"CLOSE A FILE!"<<endl;
@@ -245,7 +249,68 @@ void close()
     }
 }
 
-main(){
+void read()//读文件
+{
+    int filename;
+    cout<<"READ A FILE!"<<endl;
+    cout<<"FILENAME: ";cin>>filename;
+    int i;
+    int fg=0;
+    for(i=0;i<afds.size();i++)
+    {
+        if(afds[i].fileName==filename)
+        {
+            fg=1;
+            break;
+        }
+    }
+    if (!fg) cout<<"FILE IS NOT OPENING!"<<endl;//处理所需文件未打开的情况
+    else if(afds[i].proctectCode[0]==0)
+    {
+        cout<<"ERROR MESSAGE:IT IS NOT ALLOWED TO READ THIS FILE!"<<endl;
+    }
+    else
+    {
+        afds[i].ROrW=1;
+        cout<<"FILE READ!"<<endl;
+    }    
+}
+
+void write()//写文件
+{
+    int filename;
+    cout<<"WRITE A FILE!"<<endl;
+    cout<<"FILENAME: ";cin>>filename;
+    int i;
+    int fg=0;
+    for(i=0;i<afds.size();i++)
+    {
+        if(afds[i].fileName==filename)
+        {
+            fg=1;
+            break;
+        }
+    }
+    if (!fg) cout<<"FILE IS NOT OPENING!"<<endl;//处理所需文件未打开的情况
+    else if(afds[i].proctectCode[0]==0)
+    {
+        cout<<"ERROR MESSAGE:IT IS NOT ALLOWED TO WRITE THIS FILE!"<<endl;
+    }
+    else
+    {
+        afds[i].ROrW=2;
+        cout<<"FILE WROTE!"<<endl;
+    }    
+}
+
+void bye(int num)//关闭系统
+{
+    printDir(num);
+    printAfd();
+    cout<<"EXIT, BYE!"<<endl;
+}
+
+int main(){
     front();
     cout<<"USER NAME: ";
     for(int i=0;i<USER;i++)
@@ -264,7 +329,8 @@ main(){
     }
     printDir(num);
     int option;
-    cout<<"INPUT OPTION: (1 FOR CREATE, 2 FOR DELETE, 3 FOR OPEN, 4 FOR CLOSE. 5 FOR READ, 6 FOR WRITE, 7 FOR QUIT)  ";
+    cout<<"INPUT OPTION: (1 FOR CREATE, 2 FOR DELETE, 
+    3 FOR OPEN, 4 FOR CLOSE. 5 FOR READ, 6 FOR WRITE, 7 FOR QUIT)  ";
     while(cin>>option)
     {
         switch(option)
@@ -293,7 +359,30 @@ main(){
                 printAfd();
                 break;
             }
+            case 5://读文件
+            {
+                read();
+                printAfd();
+                break;
+            }
+            case 6://写文件
+            {
+                write();
+                printAfd();
+                break;
+            }
+            case 7://退出系统
+            {
+                bye(num);
+                return 0;
+            }
+            default:
+            {
+                cout<<"OPTION USELESS!"<<endl;
+                break;
+            }
         }
-        cout<<"INPUT OPTION: (1 FOR CREATE, 2 FOR DELETE, 3 FOR OPEN, 4 FOR CLOSE. 5 FOR READ, 6 FOR WRITE, 7 FOR QUIT)  ";
+        cout<<"INPUT OPTION: (1 FOR CREATE, 2 FOR DELETE, 
+        3 FOR OPEN, 4 FOR CLOSE. 5 FOR READ, 6 FOR WRITE, 7 FOR QUIT)  ";
     }
 }
