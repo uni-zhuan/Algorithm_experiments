@@ -153,10 +153,11 @@ void dele(char chooseUser)//删除文件
         }
     }
     if (!fg) cout<<"NO SUCH FILE!"<<endl;
-    else{//文件打开的情况，不可直接删除，需要提醒
-        for(i=0;i<afds.size();i++)
+    else//文件打开的情况，不可直接删除，需要提醒
+    {
+        for(int j=0;j<afds.size();j++)
         {
-            if(afds[i].fileName==filename)
+            if(afds[j].fileName==filename)
             {
                 fg=1;
                 break;
@@ -167,7 +168,8 @@ void dele(char chooseUser)//删除文件
             fds.erase(fds.begin()+i);
             for(int j=0;j<USER;j++)
             {
-                if(mfds[i].user==chooseUser&&mfds[i].dirp==i)//若删除的文件处理程序恰为目录区头部指针，需要后移
+                if(mfds[i].user==chooseUser&&mfds[i].dirp==i)
+                //若删除的文件处理程序恰为目录区头部指针，需要后移
                 {
                     int flag=0;
                     for(int k=i;k<fds.size();k++)
@@ -271,8 +273,25 @@ void read()//读文件
     }
     else
     {
-        afds[i].ROrW=1;
-        cout<<"FILE READ!"<<endl;
+        int iseek;
+        cout<<"ISEEK(READ) MOVE: ";
+        cin>>iseek;
+        for(i=0;i<fds.size();i++)
+        {
+            if(fds[i].fileName==filename)
+            {
+                break;
+            }
+        }
+        if(iseek<=fds[i].fileLength)
+        {
+            afds[i].ROrW=iseek;
+            cout<<"FILE READ!"<<endl;
+        }
+        else
+        {
+            cout<<"ERROR MESSAGE:POINTER OUT OF BOUNDS!";
+        }
     }    
 }
 
@@ -292,15 +311,84 @@ void write()//写文件
         }
     }
     if (!fg) cout<<"FILE IS NOT OPENING!"<<endl;//处理所需文件未打开的情况
-    else if(afds[i].proctectCode[0]==0)
+    else if(afds[i].proctectCode[1]==0)
     {
         cout<<"ERROR MESSAGE:IT IS NOT ALLOWED TO WRITE THIS FILE!"<<endl;
     }
     else
     {
-        afds[i].ROrW=2;
-        cout<<"FILE WROTE!"<<endl;
+        int iseek;
+        cout<<"ISEEK(WRITE) MOVE: ";
+        cin>>iseek;
+        for(i=0;i<fds.size();i++)
+        {
+            if(fds[i].fileName==filename)
+            {
+                break;
+            }
+        }
+        if(iseek<=fds[i].fileLength)
+        {
+            afds[i].ROrW=iseek;
+            int length;
+            cout<<"CHARACTERS TO BE WRITTEN INTO THE FILE: ";
+            cin>>length;
+            fds[i].fileLength+=length;
+            cout<<"FILE WROTE!"<<endl;
+        }
+        else
+        {
+            cout<<"ERROR MESSAGE:POINTER OUT OF BOUNDS!";
+        }
     }    
+}
+
+void run(char chooseUser)
+{
+    int filename;
+    cout<<"RUN A FILE!"<<endl;
+    cout<<"FILENAME: ";cin>>filename;
+    int i;
+    int fg=0;
+    for(i=0;i<fds.size();i++)
+    {
+        if(fds[i].fileName==filename&&fds[i].user==chooseUser)
+        {
+            fg=1;
+            break;
+        }
+    }
+    if (!fg) cout<<"NO SUCH FILE!"<<endl;
+    else//文件打开的情况，不可直接运行，需要关闭
+    {
+        for(int j=0;j<afds.size();j++)
+        {
+            if(afds[j].fileName==filename)
+            {
+                fg=1;
+                break;
+            }
+        }
+        if (!fg) cout<<"FILE IS OPENING"<<endl;
+        else if(fds[i].proctectCode[2]==0)//用户运行权限限制
+        {
+            cout<<"ERROR MESSAGE:IT IS NOT ALLOWED TO RUN THIS FILE!";
+        }
+        else
+        {
+            cout<<"FILE "<<filename<<" RUNNED!"<<endl;
+        }
+    }
+}
+
+void movePoint()
+{
+
+}
+
+void refile()
+{
+
 }
 
 void bye(int num)//关闭系统
@@ -329,8 +417,7 @@ int main(){
     }
     printDir(num);
     int option;
-    cout<<"INPUT OPTION: (1 FOR CREATE, 2 FOR DELETE, 
-    3 FOR OPEN, 4 FOR CLOSE. 5 FOR READ, 6 FOR WRITE, 7 FOR QUIT)  ";
+    cout<<"INPUT OPTION: (1 FOR CREATE, 2 FOR DELETE, 3 FOR OPEN, 4 FOR CLOSE. 5 FOR READ, 6 FOR WRITE, 7 FOR RUN, 8 FOR MOVE POINTER, 9 FOR CHANGE PROPERITY, 10 FOR QUIT)  ";
     while(cin>>option)
     {
         switch(option)
@@ -370,8 +457,25 @@ int main(){
                 write();
                 printAfd();
                 break;
+            
             }
-            case 7://退出系统
+            case 7://运行文件
+            {
+                run(chooseUser);
+                break;
+            }
+            case 8://移动读写指针
+            {
+                movePoint();
+                break;
+            }
+            case 9://更改文件属性
+            {
+                refile();
+                printDir(num);
+                break;
+            }
+            case 10://退出系统
             {
                 bye(num);
                 return 0;
@@ -382,7 +486,6 @@ int main(){
                 break;
             }
         }
-        cout<<"INPUT OPTION: (1 FOR CREATE, 2 FOR DELETE, 
-        3 FOR OPEN, 4 FOR CLOSE. 5 FOR READ, 6 FOR WRITE, 7 FOR QUIT)  ";
+        cout<<"INPUT OPTION: (1 FOR CREATE, 2 FOR DELETE, 3 FOR OPEN, 4 FOR CLOSE. 5 FOR READ, 6 FOR WRITE, 7 FOR RUN, 8 FOR QUIT)  ";
     }
 }
