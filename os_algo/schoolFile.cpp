@@ -206,7 +206,12 @@ void visit(int myUser)
         cout>>"Visit success!"<<endl;
         return;
     }
-    if(myUser<100&&VUser%100==myUser%10)
+    if(myUser<100&&VUser/100==myUser/10)
+    {
+        cout>>"Visit success!"<<endl;
+        return;
+    }
+    if(myUser>=100&&VUser>=100&&VUser/100==myUser/100)
     {
         cout>>"Visit success!"<<endl;
         return;
