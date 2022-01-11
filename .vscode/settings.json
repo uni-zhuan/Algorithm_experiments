@@ -35,6 +35,7 @@
         "iomanip": "cpp",
         "cmath": "cpp",
         "stack": "cpp",
-        "xmemory": "cpp"
+        "xmemory": "cpp",
+        "limits": "cpp"
     }
 }

@@ -2,7 +2,7 @@ if __name__=="__main__":
     N=int(input('Input N: '))
     p=[0]
     p.append(2)
-    print('Prim: ',p[1],end=' ')
+    print('Prim:\n ',p[1],end='\n')
     x=1
     lim=1
     for i in range(1,N):
@@ -24,7 +24,7 @@ if __name__=="__main__":
                 prim=((x%p[k])!=0)
                 k=k+1
         p.append(x)
-        print(x,end=' ')
+        print(' ',x,end='\n')
         
         
         
