@@ -1,45 +1,49 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <algorithm>
 using namespace std;
 //用于识别是基本字或标识符
 void Base(string str)
 {
-
-    /*-------------------识别基本字--------------------*/
+    //字符不区分大小写，进行转换
+    string strtran=str;
+    transform(str.begin(), str.end(), str.begin(), ::tolower);
+    // 识别基本字
     if (str == "begin")
-        cout << "(beginsym,begin)" << endl;
+        cout << "(beginsym," << strtran << ")" << endl;
     else if (str == "call")
-        cout << "(callsym,call)" << endl;
+        cout << "(callsym," << strtran << ")"<< endl;
     else if (str == "const")
-        cout << "(constsym,const)" << endl;
+        cout << "(constsym," << strtran << ")"<< endl;
     else if (str == "do")
-        cout << "(dosym,do)" << endl;
+        cout << "(dosym," << strtran << ")"<< endl;
     else if (str == "end")
-        cout << "(endsym,end)" << endl;
+        cout << "(endsym," << strtran << ")" << endl;
     else if (str == "if")
-        cout << "(ifsym,if)" << endl;
+        cout << "(ifsym," << strtran << ")" << endl;
     else if (str == "odd")
-        cout << "(oddsym,odd)" << endl;
+        cout << "(oddsym," << strtran << ")" << endl;
     else if (str == "procedure")
-        cout << "(proceduresym,procedure)" << endl;
+        cout << "(proceduresym," << strtran << ")" << endl;
     else if (str == "read")
-        cout << "(readsym,read)" << endl;
+        cout << "(readsym," << strtran << ")" << endl;
     else if (str == "then")
-        cout << "(thensym,then)" << endl;
+        cout << "(thensym," << strtran << ")"<< endl;
     else if (str == "while")
-        cout << "(whilesym,while)" << endl;
+        cout << "(whilesym," << strtran << ")" << endl;
     else if (str == "var")
-        cout << "(varsym,var)" << endl;
+        cout << "(varsym," << strtran << ")"<< endl;
     else if (str == "write")
-        cout << "(writesym,write)" << endl;
+        cout << "(writesym," << strtran << ")" << endl;
+    else
+        cout << "(ident," << strtran << ")" << endl;
 }
 int Sign(string str, int i)
 {
     switch (str[i])
     {
-
-        // 识别运算符
+    // 识别运算符
     case '+':
         cout << "(plus,+)" << endl;
         return i;
@@ -47,12 +51,10 @@ int Sign(string str, int i)
     case '-':
         cout << "(minus,-)" << endl;
         return i;
-
         break;
     case '*':
         cout << "(times,*)" << endl;
         return i;
-
         break;
     case '/':
         cout << "(slash,/)" << endl;
@@ -62,23 +64,19 @@ int Sign(string str, int i)
     case '=':
         cout << "(eql,=)" << endl;
         return i;
-
         break;
     case '<':
         i++;
         if (str[i] == '>')
         {
-
             cout << "(neq,<>)" << endl;
         }
         else if (str[i] == '=')
         {
-
             cout << "(leq,<=)" << endl;
         }
         else
         {
-
             i--;
             cout << "(lss,<)" << endl;
         }
@@ -89,17 +87,14 @@ int Sign(string str, int i)
         i++;
         if (str[i] == '=')
         {
-
             cout << "(geq,>=)" << endl;
         }
         else
         {
-
             i--;
             cout << "(gtr,>)" << endl;
         }
         return i;
-
         break;
     case ':':
         i++;
@@ -140,7 +135,6 @@ int Sign(string str, int i)
     case '.':
         cout << "(period,.)" << endl;
         return i;
-
         break;
 
     // 非法字符错误处理
@@ -186,7 +180,6 @@ int main()
             string base;
             while (isdigit(str[i]) || isalpha(str[i]))
             {
-
                 base += str[i];
                 i++;
             }
@@ -201,3 +194,24 @@ int main()
     }
     return 0;
 }
+
+// 测试用例
+/*
+const a=10;
+var b,c;
+begin
+    read(b);
+    c:=a+b;
+    write(c);
+end.
+*/
+
+/*
+const a=10;
+var b,c;
+begin
+    READ(b);
+    c:=a+b;
+    write(C);
+end.
+*/
