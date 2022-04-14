@@ -2,83 +2,84 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include <stdlib.h>
 using namespace std;
 //用于识别是基本字或标识符
-void Base(string str)
+void Base(string str,ofstream &outfile)
 {
     //字符不区分大小写，进行转换
-    string strtran=str;
+    string strtran = str;
     transform(str.begin(), str.end(), str.begin(), ::tolower);
     // 识别基本字
     if (str == "begin")
-        cout << "(beginsym," << strtran << ")" << endl;
+        outfile<< "(beginsym," << strtran << ")" << endl;
     else if (str == "call")
-        cout << "(callsym," << strtran << ")"<< endl;
+        outfile<< "(callsym," << strtran << ")" << endl;
     else if (str == "const")
-        cout << "(constsym," << strtran << ")"<< endl;
+        outfile<< "(constsym," << strtran << ")" << endl;
     else if (str == "do")
-        cout << "(dosym," << strtran << ")"<< endl;
+        outfile<< "(dosym," << strtran << ")" << endl;
     else if (str == "end")
-        cout << "(endsym," << strtran << ")" << endl;
+        outfile<< "(endsym," << strtran << ")" << endl;
     else if (str == "if")
-        cout << "(ifsym," << strtran << ")" << endl;
+        outfile<< "(ifsym," << strtran << ")" << endl;
     else if (str == "odd")
-        cout << "(oddsym," << strtran << ")" << endl;
+        outfile<< "(oddsym," << strtran << ")" << endl;
     else if (str == "procedure")
-        cout << "(proceduresym," << strtran << ")" << endl;
+        outfile<< "(proceduresym," << strtran << ")" << endl;
     else if (str == "read")
-        cout << "(readsym," << strtran << ")" << endl;
+        outfile<< "(readsym," << strtran << ")" << endl;
     else if (str == "then")
-        cout << "(thensym," << strtran << ")"<< endl;
+        outfile<< "(thensym," << strtran << ")" << endl;
     else if (str == "while")
-        cout << "(whilesym," << strtran << ")" << endl;
+        outfile<< "(whilesym," << strtran << ")" << endl;
     else if (str == "var")
-        cout << "(varsym," << strtran << ")"<< endl;
+        outfile<< "(varsym," << strtran << ")" << endl;
     else if (str == "write")
-        cout << "(writesym," << strtran << ")" << endl;
+        outfile<< "(writesym," << strtran << ")" << endl;
     else
-        cout << "(ident," << strtran << ")" << endl;
+        outfile<< "(ident," << strtran << ")" << endl;
 }
-int Sign(string str, int i)
+int Sign(string str, int i,ofstream &outfile)
 {
     switch (str[i])
     {
     // 识别运算符
     case '+':
-        cout << "(plus,+)" << endl;
+        outfile<< "(plus,+)" << endl;
         return i;
         break;
     case '-':
-        cout << "(minus,-)" << endl;
+        outfile<< "(minus,-)" << endl;
         return i;
         break;
     case '*':
-        cout << "(times,*)" << endl;
+        outfile<< "(times,*)" << endl;
         return i;
         break;
     case '/':
-        cout << "(slash,/)" << endl;
+        outfile<< "(slash,/)" << endl;
         return i;
 
         break;
     case '=':
-        cout << "(eql,=)" << endl;
+        outfile<< "(eql,=)" << endl;
+        return i;
+        break;
+    case '#':
+        outfile<< "(neq,#)" << endl;
         return i;
         break;
     case '<':
         i++;
-        if (str[i] == '>')
+        if (str[i] == '=')
         {
-            cout << "(neq,<>)" << endl;
-        }
-        else if (str[i] == '=')
-        {
-            cout << "(leq,<=)" << endl;
+            outfile<< "(leq,<=)" << endl;
         }
         else
         {
             i--;
-            cout << "(lss,<)" << endl;
+            outfile<< "(lss,<)" << endl;
         }
         return i;
 
@@ -87,12 +88,12 @@ int Sign(string str, int i)
         i++;
         if (str[i] == '=')
         {
-            cout << "(geq,>=)" << endl;
+            outfile<< "(geq,>=)" << endl;
         }
         else
         {
             i--;
-            cout << "(gtr,>)" << endl;
+            outfile<< "(gtr,>)" << endl;
         }
         return i;
         break;
@@ -101,11 +102,11 @@ int Sign(string str, int i)
         if (str[i] == '=')
         {
 
-            cout << "(becomes,:=)" << endl;
+            outfile<< "(becomes,:=)" << endl;
         }
         else
         {
-            cout << "error!";
+            outfile<< "error!";
             //错误处理
         }
         return i;
@@ -113,51 +114,59 @@ int Sign(string str, int i)
         break;
     // 识别界符
     case '(':
-        cout << "(lparen,()" << endl;
+        outfile<< "(lparen,()" << endl;
         return i;
 
         break;
     case ')':
-        cout << "(rparen,))" << endl;
+        outfile<< "(rparen,))" << endl;
         return i;
 
         break;
     case ',':
-        cout << "(comma,,)" << endl;
+        outfile<< "(comma,,)" << endl;
         return i;
 
         break;
     case ';':
-        cout << "(semicolon,;)" << endl;
+        outfile<< "(semicolon,;)" << endl;
         return i;
 
         break;
     case '.':
-        cout << "(period,.)" << endl;
+        outfile<< "(period,.)" << endl;
         return i;
         break;
 
     // 非法字符错误处理
     default:
         //错误处理
+        outfile<< "Error char:" <<str[i]<< endl;
+        return i;
         break;
     }
 }
 int main()
 {
 
-    string str1, str;
-    while (cin >> str1)
+    ifstream input_file("in.txt");
+    string outstr;
+    string single_line, str,str1;
+    while (getline(input_file, single_line))
     {
         //读入代码
-        str = str + ' ' + str1;
+        str1 = str1 + ' ' + single_line;
     }
+    input_file.close();
+    str=str1;
+    ofstream outfile("out.txt");
     //开始处理读入的代码
     int length_str = str.length();
+
     for (int i = 0; i < length_str; i++)
     {
 
-        if (str[i] == ' ' || str[i] == '\n') //当遇到空格或换行时，跳过继续执行
+        if (str[i] == ' ' || str[i] == '\n'||str[i]=='\t') //当遇到空格或换行时，跳过继续执行
             continue;
         //识别常数
         else if (isdigit(str[i]))
@@ -169,7 +178,7 @@ int main()
                 i++;
             }
             i--;
-            cout << "(number," << digit << ")" << endl;
+            outfile<< "(number," << digit << ")\n" ;
         }
 
         // 识别基本字/标识符
@@ -184,34 +193,16 @@ int main()
                 i++;
             }
             i--;
-            Base(base);
+            Base(base,outfile);
         }
         // odd运算符按基本字处理
         else
         {
-            i = Sign(str, i);
+            i = Sign(str, i,outfile);
         }
+        // outfile<<i<<endl;
     }
-    return 0;
+    outfile.close();
+    //return 0;
 }
 
-// 测试用例
-/*
-const a=10;
-var b,c;
-begin
-    read(b);
-    c:=a+b;
-    write(c);
-end.
-*/
-
-/*
-const a=10;
-var b,c;
-begin
-    READ(b);
-    c:=a+b;
-    write(C);
-end.
-*/

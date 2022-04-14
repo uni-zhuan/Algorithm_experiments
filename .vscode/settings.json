@@ -36,6 +36,7 @@
         "cmath": "cpp",
         "stack": "cpp",
         "xmemory": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "iosfwd": "cpp"
     }
 }

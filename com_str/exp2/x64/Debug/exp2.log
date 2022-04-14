@@ -1,0 +1,21 @@
+﻿  Compiling CUDA source file exp2_2.cu...
+  
+  D:\study\c_code\com_str\exp2>"E:\programs\cuda\NVIDIA GPU Computing Toolkit\CUDA\v11.6\bin\nvcc.exe" -gencode=arch=compute_52,code=\"sm_52,compute_52\" --use-local-env -ccbin "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\bin\HostX86\x64" -x cu   -I"E:\programs\cuda\NVIDIA GPU Computing Toolkit\CUDA\v11.6\include" -I"E:\programs\cuda\NVIDIA GPU Computing Toolkit\CUDA\v11.6\include" -I"E:\programs\cuda\NVIDIA GPU Computing Toolkit\CUDA\v11.6\include"  -G   --keep-dir x64\Debug  -maxrregcount=0  --machine 64 --compile -cudart static  -g  -D_DEBUG -D_CONSOLE -D_UNICODE -DUNICODE -Xcompiler "/EHsc /W3 /nologo /Od /Fdx64\Debug\vc142.pdb /FS /Zi /RTC1 /MDd " -o x64\Debug\exp2_2.cu.obj "D:\study\c_code\com_str\exp2\exp2_2.cu" 
+D:\study\c_code\com_str\exp2\exp2_2.cu(182): warning #550-D: variable "d" was set but never used
+  
+D:\study\c_code\com_str\exp2\exp2_2.cu(156): warning #177-D: function "matMultCPU_serial" was declared but never referenced
+  
+  exp2_2.cu
+D:\study\c_code\com_str\exp2\exp2_2.cu(19): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“const size_t”
+  D:\study\c_code\com_str\exp2\exp2_2.cu(19): note: 请考虑在格式字符串中使用“%zd”
+D:\study\c_code\com_str\exp2\exp2_2.cu(20): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“const size_t”
+  D:\study\c_code\com_str\exp2\exp2_2.cu(20): note: 请考虑在格式字符串中使用“%zd”
+D:\study\c_code\com_str\exp2\exp2_2.cu(23): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“const size_t”
+  D:\study\c_code\com_str\exp2\exp2_2.cu(23): note: 请考虑在格式字符串中使用“%zd”
+D:\study\c_code\com_str\exp2\exp2_2.cu(27): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“const size_t”
+  D:\study\c_code\com_str\exp2\exp2_2.cu(27): note: 请考虑在格式字符串中使用“%zd”
+D:\study\c_code\com_str\exp2\exp2_2.cu(30): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“const size_t”
+  D:\study\c_code\com_str\exp2\exp2_2.cu(30): note: 请考虑在格式字符串中使用“%zd”
+D:\study\c_code\com_str\exp2\exp2_2.cu(82): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+D:\study\c_code\com_str\exp2\exp2_2.cu(168): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+  exp2.vcxproj -> D:\study\c_code\com_str\exp2\x64\Debug\exp2.exe
